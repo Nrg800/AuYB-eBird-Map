@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Mapbox CSV Points</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+
+  <!-- Mapbox CSS -->
+  <link
+    href="https://api.mapbox.com/mapbox-gl-js/v3.17.0/mapbox-gl.css"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+
+    /* Filter UI container */
+    #filterUI {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+      background: white;
+      padding: 4px;
+      border-radius: 4px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+      font-family: sans-serif;
+    }
+
+    #filterUI button,
+    #filterUI input {
+      display: block;
+      margin: 4px 0;
+      width: 100%;
+    }
+  </style>
+  <style>
+    .mapboxgl-popup-content {
+    background: #1e1e1e;
+    color: #fff;
+    }
+    .mapboxgl-popup-tip {
+    border-top-color: #1e1e1e;
+    }
+    </style>
+</head>
+
+<body>
+  <!-- Map -->
+  <div id="map"></div>
+
+  <!-- Filter UI -->
+    <div id="filterUI">
+    <button id="filterToggle" title="Filter">
+    <i class="fas fa-filter"></i>
+    </button>
+    <div id="filterPanel" style="display: none;">
+        <select id="filterType">
+        <option value="name">Name</option>
+        <option value="year">Year</option>
+        </select>
+
+        <input
+        type="text"
+        id="filterValue"
+        placeholder="Enter name"
+        />
+
+        <button id="applyFilter">Apply filter</button>
+        <button id="clearFilter">Clear filter</button>
+    </div>
+    </div>
+  <!-- Mapbox GL JS -->
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.17.0/mapbox-gl.js"></script>
+
+  <!-- PapaParse for CSV parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <!-- App logic -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
