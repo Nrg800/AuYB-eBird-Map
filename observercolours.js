@@ -28,7 +28,7 @@ export function hashStringToNumber(str) {
 }
 
 // Deterministic HSV color from a string
-export function getDeterministicColor(str, hueRange = [0, 1], satRange = [0.6, 0.8], valRange = [0.4, 0.65]) {
+export function getDeterministicColor(str, hueRange = [0, 1], satRange = [0.6, 0.8], valRange = [0.6, 0.8]) {
     const hash = hashStringToNumber(str);
     const h = hueRange[0] + ((hash % 1000) / 1000) * (hueRange[1] - hueRange[0]);
     const s = satRange[0] + (((hash >> 10) % 1000) / 1000) * (satRange[1] - satRange[0]);
