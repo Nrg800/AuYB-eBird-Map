@@ -157,10 +157,19 @@ clearFilterBtn.addEventListener('click', () => {
   // ============================
   // Apply filter
   // ============================
+
+  function toProperCase(str) {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+    }
+
   applyFilterBtn.addEventListener('click', () => {
     const filterType = filterTypeSelect.value;
-    const rawValue = filterValueInput.value.trim();
-
+    let rawValue = filterValueInput.value.trim();
+    rawValue = toProperCase(rawValue); // Convert to Proper Case
     if (!rawValue) {
       alert('Please enter a value');
       return;
@@ -204,7 +213,7 @@ clearFilterBtn.addEventListener('click', () => {
   map.setFilter('points-layer', null);
   filterValueInput.value = '';
   filterTypeSelect.value = 'name';
-  filterValueInput.placeholder = 'Enter name (e.g. Nathan Ruser)';
+  filterValueInput.placeholder = 'Enter full name';
 });
 
   // ============================
