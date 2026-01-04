@@ -15,7 +15,8 @@ const pointLayerStyle = {
             ['linear'],
             ['get', 'totalSpecies'],
             0, 2,
-            150, 22
+            150, 22,
+            999, 22
         ],
 
         'circle-opacity': [
@@ -130,7 +131,7 @@ clearFilterBtn.addEventListener('click', () => {
 
   // Optionally reset filter type to "Name"
   filterTypeSelect.value = 'name';
-  filterValueInput.placeholder = 'Enter name (e.g. Nathan Ruser)';
+  filterValueInput.placeholder = 'Enter full name';
 
   // Hide filter panel if desired
   // filterPanel.style.display = 'none';
@@ -149,7 +150,7 @@ clearFilterBtn.addEventListener('click', () => {
     filterValueInput.value = '';
     filterValueInput.placeholder =
       filterTypeSelect.value === 'name'
-        ? 'Enter name (e.g. Nathan Ruser)'
+        ? 'Enter full name'
         : 'Enter year (e.g. 2024)';
   });
 
