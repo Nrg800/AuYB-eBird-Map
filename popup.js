@@ -46,7 +46,7 @@ export function addPointLayerPopups(map, layerId) {
                         ['Total Records', f.totalRecords],
                         ['Total Individuals Seen', f.totalIndividualsSeen],
                         ['Visited by', f.visitedBy],
-                        ['Observer Species', `'${f.observerSpeciesCounts}`]
+                        ['Observer Species', f.observerSpeciesCounts]
                     ].map(([label, value]) => `
                         <tr>
                             <td style="padding: 3px 20px 3px 10px; color: #9ca3af; white-space: nowrap;">${label}</td>
