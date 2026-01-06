@@ -34,7 +34,7 @@ const pointLayerStyle = {
  
 
 // ============================
-// 3️⃣ CSV load & GeoJSON
+// 3️⃣ CSV load & GeoJSON (with stats box)
 // ============================
 function loadCSVAndAddLayer(map) {
     Papa.parse('Final/LivingFinal.csv', {
@@ -46,7 +46,27 @@ function loadCSVAndAddLayer(map) {
             // Assign colors
             const colorMap = observercolours(results.data);
 
+            // ============================
+            // Compute stats for the stats box
+            // ============================
+            const numLocations = results.data.length;
+            const totalRecords = results.data.reduce(
+                (sum, d) => sum + (parseInt(d['Total Records']) || 0),
+                0
+            );
+            const totalIndividuals = results.data.reduce(
+                (sum, d) => sum + (parseFloat(d['Total Individuals Seen']) || 0),
+                0
+            );
+
+            // Update the stats box in the DOM
+            document.getElementById('numLocations').textContent = `Locations: ${numLocations.toLocaleString()}`;
+            document.getElementById('totalRecords').textContent = `Total Records: ${totalRecords.toLocaleString()}`;
+            document.getElementById('totalIndividuals').textContent = `Total Individuals Seen: ${totalIndividuals.toLocaleString()}`;
+
+            // ============================
             // Convert CSV rows to GeoJSON features
+            // ============================
             const features = results.data
                 .filter(d => d.Latitude && d.Longitude)
                 .map(d => ({
@@ -67,7 +87,6 @@ function loadCSVAndAddLayer(map) {
                         locationName: d['Location Name'],
                         rarestSpecies: d['Rarest Species'],
                         rarestSpeciesScore: parseFloat(d['Rarest Species Score']) || 0,
-                        topObserver: d['Top Observer'],
                         visitedBy: d['Visited By'],
                         observerSpeciesCounts: d['Observer Species Counts'],
                         yearsVisited: d['Years Visited'],
@@ -78,10 +97,13 @@ function loadCSVAndAddLayer(map) {
 
             const geojson = { type: 'FeatureCollection', features };
 
-            // Add source and layer
+            // ============================
+            // Add source and layer to map
+            // ============================
             map.addSource('eBird_Locs', { type: 'geojson', data: geojson });
             map.addLayer(pointLayerStyle);
             addPointLayerPopups(map, 'points-layer');
+
             console.log(`Loaded ${features.length} points`);
         },
         error: function(err) {
@@ -89,6 +111,7 @@ function loadCSVAndAddLayer(map) {
         }
     });
 }
+
 
 // ============================
 // Filters – helper
