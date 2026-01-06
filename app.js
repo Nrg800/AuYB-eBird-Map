@@ -66,11 +66,11 @@ function loadCSVAndAddLayer(map) {
             // ----------------------------
             // 3c️⃣ Update the stats box
             document.getElementById('globalNumLocations').textContent =
-                `Locations: ${globalNumLocations.toLocaleString()}`;
+                `Locations (in view): ${globalNumLocations.toLocaleString()}`;
             document.getElementById('globalTotalRecords').textContent =
-                `Total Records: ${globalTotalRecords.toLocaleString()}`;
+                `Total Records (in view): ${globalTotalRecords.toLocaleString()}`;
             document.getElementById('globalTotalIndividuals').textContent =
-                `Total Individuals Seen: ${globalTotalIndividuals.toLocaleString()}`;
+                `Total Individuals (in view): ${globalTotalIndividuals.toLocaleString()}`;
 
             // ----------------------------
             // 3d️⃣ Convert CSV rows to GeoJSON features
@@ -281,13 +281,13 @@ clearFilterBtn.addEventListener('click', () => {
     // ---- Update DOM with global + in-view numbers ----
     // Match these IDs to your current HTML
     document.getElementById('globalNumLocations').textContent =
-        `Locations: ${globalNumLocations.toLocaleString()} (${numLocationsInView.toLocaleString()})`;
+        `Locations (in view): ${globalNumLocations.toLocaleString()} (${numLocationsInView.toLocaleString()})`;
 
     document.getElementById('globalTotalRecords').textContent =
-        `Total Records: ${globalTotalRecords.toLocaleString()} (${totalRecordsInView.toLocaleString()})`;
+        `Total Records (in view): ${globalTotalRecords.toLocaleString()} (${totalRecordsInView.toLocaleString()})`;
 
     document.getElementById('globalTotalIndividuals').textContent =
-        `Total Individuals Seen: ${globalTotalIndividuals.toLocaleString()} (${totalIndividualsInView.toLocaleString()})`;
+        `Total Individuals (in view): ${globalTotalIndividuals.toLocaleString()} (${totalIndividualsInView.toLocaleString()})`;
 
     document.getElementById('rarestInViewport').textContent =
         features.length > 0
@@ -303,6 +303,7 @@ document.getElementById('globalTotalRecords').textContent = 'Total Records (in v
 document.getElementById('globalTotalIndividuals').textContent = 'Total Individuals (in view): Loading...';
 
 // Update whenever map moves or zooms
+map.on('load', updateStatsInViewport);
 map.on('moveend', updateStatsInViewport);
 map.on('zoomend', updateStatsInViewport);
 
