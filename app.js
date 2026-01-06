@@ -31,11 +31,15 @@ const pointLayerStyle = {
         'circle-color': ['get', 'color'],
     }
 };
- 
+
+// ============================
+// 2️⃣ Global Stats Variables
+let globalNumLocations = 0;
+let globalTotalRecords = 0;
+let globalTotalIndividuals = 0;
 
 // ============================
 // 3️⃣ CSV load & GeoJSON (with stats box)
-// ============================
 function loadCSVAndAddLayer(map) {
     Papa.parse('Final/LivingFinal.csv', {
         download: true,
@@ -43,30 +47,33 @@ function loadCSVAndAddLayer(map) {
         skipEmptyLines: true,
         complete: function(results) {
 
-            // Assign colors
+            // ----------------------------
+            // 3a️⃣ Assign colors
             const colorMap = observercolours(results.data);
 
-            // ============================
-            // Compute stats for the stats box
-            // ============================
-            const numLocations = results.data.length;
-            const totalRecords = results.data.reduce(
+            // ----------------------------
+            // 3b️⃣ Compute global stats
+            globalNumLocations = results.data.length;
+            globalTotalRecords = results.data.reduce(
                 (sum, d) => sum + (parseInt(d['Total Records']) || 0),
                 0
             );
-            const totalIndividuals = results.data.reduce(
+            globalTotalIndividuals = results.data.reduce(
                 (sum, d) => sum + (parseFloat(d['Total Individuals Seen']) || 0),
                 0
             );
 
-            // Update the stats box in the DOM
-            document.getElementById('numLocations').textContent = `Locations: ${numLocations.toLocaleString()}`;
-            document.getElementById('totalRecords').textContent = `Total Records: ${totalRecords.toLocaleString()}`;
-            document.getElementById('totalIndividuals').textContent = `Total Individuals Seen: ${totalIndividuals.toLocaleString()}`;
+            // ----------------------------
+            // 3c️⃣ Update the stats box
+            document.getElementById('globalNumLocations').textContent =
+                `Locations: ${globalNumLocations.toLocaleString()}`;
+            document.getElementById('globalTotalRecords').textContent =
+                `Total Records: ${globalTotalRecords.toLocaleString()}`;
+            document.getElementById('globalTotalIndividuals').textContent =
+                `Total Individuals Seen: ${globalTotalIndividuals.toLocaleString()}`;
 
-            // ============================
-            // Convert CSV rows to GeoJSON features
-            // ============================
+            // ----------------------------
+            // 3d️⃣ Convert CSV rows to GeoJSON features
             const features = results.data
                 .filter(d => d.Latitude && d.Longitude)
                 .map(d => ({
@@ -97,12 +104,16 @@ function loadCSVAndAddLayer(map) {
 
             const geojson = { type: 'FeatureCollection', features };
 
-            // ============================
-            // Add source and layer to map
-            // ============================
-            map.addSource('eBird_Locs', { type: 'geojson', data: geojson });
-            map.addLayer(pointLayerStyle);
-            addPointLayerPopups(map, 'points-layer');
+            // ----------------------------
+            // 3e️⃣ Add source and layer to map
+            if (map.getSource('eBird_Locs')) {
+                // If source already exists, update data
+                map.getSource('eBird_Locs').setData(geojson);
+            } else {
+                map.addSource('eBird_Locs', { type: 'geojson', data: geojson });
+                map.addLayer(pointLayerStyle);
+                addPointLayerPopups(map, 'points-layer');
+            }
 
             console.log(`Loaded ${features.length} points`);
         },
@@ -237,7 +248,63 @@ clearFilterBtn.addEventListener('click', () => {
   filterValueInput.value = '';
   filterTypeSelect.value = 'name';
   filterValueInput.placeholder = 'Enter full name';
-});
+});function updateStatsInViewport() {
+    // Get features currently visible in the viewport
+    const features = map.queryRenderedFeatures({ layers: ['points-layer'] });
+
+    // ---- Dynamic stats in viewport ----
+    const numLocationsInView = features.length;
+    const totalRecordsInView = features.reduce(
+        (sum, f) => sum + (parseInt(f.properties.totalRecords) || 0),
+        0
+    );
+    const totalIndividualsInView = features.reduce(
+        (sum, f) => sum + (parseFloat(f.properties.totalIndividualsSeen) || 0),
+        0
+    );
+
+    // ---- Rarest species in viewport ----
+    let rarestSpecies = 'N/A';
+    let rarestScore = 0;
+
+    if (features.length > 0) {
+        let maxFeature = features[0];
+        for (let f of features) {
+            if ((f.properties.rarestSpeciesScore || 0) > (maxFeature.properties.rarestSpeciesScore || 0)) {
+                maxFeature = f;
+            }
+        }
+        rarestSpecies = maxFeature.properties.rarestSpecies || 'N/A';
+        rarestScore = maxFeature.properties.rarestSpeciesScore || 0;
+    }
+
+    // ---- Update DOM with global + in-view numbers ----
+    // Match these IDs to your current HTML
+    document.getElementById('globalNumLocations').textContent =
+        `Locations: ${globalNumLocations.toLocaleString()} (${numLocationsInView.toLocaleString()})`;
+
+    document.getElementById('globalTotalRecords').textContent =
+        `Total Records: ${globalTotalRecords.toLocaleString()} (${totalRecordsInView.toLocaleString()})`;
+
+    document.getElementById('globalTotalIndividuals').textContent =
+        `Total Individuals Seen: ${globalTotalIndividuals.toLocaleString()} (${totalIndividualsInView.toLocaleString()})`;
+
+    document.getElementById('rarestInViewport').textContent =
+        features.length > 0
+            ? `Rarest species in view: ${rarestSpecies} (${rarestScore.toLocaleString()})`
+            : 'No locations in view';
+}
+
+// Initial placeholder before CSV loads
+document.getElementById('rarestInViewport').textContent =
+    'Rarest species in view: Bougainville Thicketbird (100)';
+document.getElementById('globalNumLocations').textContent = 'Locations (in view): Loading...';
+document.getElementById('globalTotalRecords').textContent = 'Total Records (in view): Loading...';
+document.getElementById('globalTotalIndividuals').textContent = 'Total Individuals (in view): Loading...';
+
+// Update whenever map moves or zooms
+map.on('moveend', updateStatsInViewport);
+map.on('zoomend', updateStatsInViewport);
 
   // ============================
   // Load CSV and add points layer
