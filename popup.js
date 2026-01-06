@@ -39,12 +39,12 @@ export function addPointLayerPopups(map, layerId) {
                 </div>
                 <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 8px;">
                     ${[
-                        ['Total Species', f.totalSpecies],
+                        ['Total Species', f.totalSpecies.toLocaleString()],
                         ['Rarest Species', `${f.rarestSpecies} (${f.rarestSpeciesScore})`],
                         ['Date Last Visited', f.visitlast],
                         ['Top Observer', f.topObserver],
-                        ['Total Records', f.totalRecords],
-                        ['Total Individuals Seen', f.totalIndividualsSeen],
+                        ['Total Records', f.totalRecords.toLocaleString()],
+                        ['Total Individuals Seen', f.totalIndividualsSeen.toLocaleString()],
                         ['Visited by', f.visitedBy],
                         ['Observer Species', f.observerSpeciesCounts]
                     ].map(([label, value]) => `
